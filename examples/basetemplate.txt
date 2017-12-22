@@ -1,0 +1,10 @@
+hostname #HOSTNAME#
+ip domain-name test.local
+!
+!
+!
+int vlan 5
+ip add #VLAN5# 255.255.255.0
+!
+int vlan 6
+ip add #VLAN6# 255.255.255.0

@@ -1,0 +1,4 @@
+#NOTE: Just list the variables, one per line below
+#HOSTNAME#
+#VLAN5#
+#VLAN6#
