@@ -10,10 +10,15 @@ Install OpenPYXL
 Install FileInput
 
 ---VERSION---
-VERSION 1.0
+VERSION 1.1
 Currently Implemented Features
 -Text based variable replacement
 -XLSX based variable replacement
+-Automatic math for CIDR on XLSX
+	- If the XLSX column data contains a subnet in cidr format, and the variable contains IPADD, it will automatically switch it out for the gateway IP in subnet format
+		- e.g. 10.1.1.0/24 -> 10.1.1.1 255.255.255.0
+		- Additional variables would be HSRPPRI (changes to 10.1.1.2) and HSRPSEC (changes to 10.1.1.3)
+	- Full list of math based variables (IPADD,HSRPPRI,HSRPSEC)
 
 
 Features planned in the near future
@@ -83,12 +88,14 @@ if 'y' in XLSimportq.lower():
 	excelfilelocation = raw_input('File to load the excel data from (e.g. C:/Python27/exceldata.xlsx):')
 	if excelfilelocation == '':
 		excelfilelocation = 'C:/Python27/exceldata.xlsx'
+	excelfilelocation = excelfilelocation.replace('"', '')
 
 # Import TXT/CLI Method
 if 'n' in XLSimportq.lower():
 	templatefilelocation = raw_input('File to load the default template from (e.g. C:/Python27/basetemplate.txt):')
 	if templatefilelocation == '':
 		templatefilelocation = 'C:/Python27/basetemplate.txt'
+	templatefilelocation = templatefilelocation.replace('"', '')
 	try:
 		with open(templatefilelocation, 'r') as file :
 			configfiledata = file.read()
@@ -98,6 +105,7 @@ if 'n' in XLSimportq.lower():
 	variablefilelocation = raw_input("File to load variables from (e.g. C:/Python27/variables.txt):")
 	if variablefilelocation == '':
 		variablefilelocation = 'C:/Python27/variables.txt'
+	variablefilelocation = variablefilelocation.replace('"', '')
 	try:
 		with open(variablefilelocation) as f:
 			variablelist = f.read().splitlines() 
@@ -107,6 +115,7 @@ if 'n' in XLSimportq.lower():
 	finalconfigfile = raw_input('Configuration file path to save to (e.g. ' + finalconfigpath + '):')
 	if finalconfigfile == '':
 		finalconfigfile = finalconfigpath
+	finalconfigfile = finalconfigfile.replace('"', '')
 
 # Save File
 
@@ -142,7 +151,7 @@ if 'y' in XLSimportq.lower():
 					except:
 						variableresult = values.get(xlscolumnname)
 						variableresult = str(variableresult)
-					if "/" in variableresult:
+					if "/" in variableresult and "IPADD" in xlscolumnname:
 						variableresult = variableresult.split('/')
 						cidrvariable = variableresult[1]
 						cidrvariable = int(cidrvariable)
@@ -155,6 +164,38 @@ if 'y' in XLSimportq.lower():
 						lastoctet = networkaddress[3]
 						lastoctet = int(lastoctet)
 						lastoctet = lastoctet + 1
+						lastoctet = str(lastoctet)
+						gatewayip = firstoctet + '.' + secondoctet + '.' + thirdoctet + '.' + lastoctet
+						variableresult = str(gatewayip) + ' ' + str(subnetmask)
+					if "/" in variableresult and "HSRPPRI" in xlscolumnname:
+						variableresult = variableresult.split('/')
+						cidrvariable = variableresult[1]
+						cidrvariable = int(cidrvariable)
+						subnetmask = calcDottedNetmask(cidrvariable)
+						networkaddress = variableresult[0]
+						networkaddress = networkaddress.split('.')
+						firstoctet = networkaddress[0]
+						secondoctet = networkaddress[1]
+						thirdoctet = networkaddress[2]
+						lastoctet = networkaddress[3]
+						lastoctet = int(lastoctet)
+						lastoctet = lastoctet + 2
+						lastoctet = str(lastoctet)
+						gatewayip = firstoctet + '.' + secondoctet + '.' + thirdoctet + '.' + lastoctet
+						variableresult = str(gatewayip) + ' ' + str(subnetmask)
+					if "/" in variableresult and "HSRPSEC" in xlscolumnname:
+						variableresult = variableresult.split('/')
+						cidrvariable = variableresult[1]
+						cidrvariable = int(cidrvariable)
+						subnetmask = calcDottedNetmask(cidrvariable)
+						networkaddress = variableresult[0]
+						networkaddress = networkaddress.split('.')
+						firstoctet = networkaddress[0]
+						secondoctet = networkaddress[1]
+						thirdoctet = networkaddress[2]
+						lastoctet = networkaddress[3]
+						lastoctet = int(lastoctet)
+						lastoctet = lastoctet + 3
 						lastoctet = str(lastoctet)
 						gatewayip = firstoctet + '.' + secondoctet + '.' + thirdoctet + '.' + lastoctet
 						variableresult = str(gatewayip) + ' ' + str(subnetmask)

@@ -32,7 +32,15 @@ Just execute the script and answer the questions
 
 ## Versioning
 
-Version 1.0 - Created initial copy of tool
+VERSION 1.1
+Currently Implemented Features
+-Text based variable replacement
+-XLSX based variable replacement
+-Automatic math for CIDR on XLSX
+	- If the XLSX column data contains a subnet in cidr format, and the variable contains IPADD, it will automatically switch it out for the gateway IP in subnet format
+		- e.g. 10.1.1.0/24 -> 10.1.1.1 255.255.255.0
+		- Additional variables would be HSRPPRI (changes to 10.1.1.2) and HSRPSEC (changes to 10.1.1.3)
+	- Full list of math based variables (IPADD,HSRPPRI,HSRPSEC)
 
 ## Authors
 
