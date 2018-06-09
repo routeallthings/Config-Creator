@@ -163,7 +163,8 @@ if 'y' in XLSimportq.lower():
 						thirdoctet = networkaddress[2]
 						lastoctet = networkaddress[3]
 						lastoctet = int(lastoctet)
-						lastoctet = lastoctet + 1
+						if not subnetmask == '255.255.255.255':
+							lastoctet = lastoctet + 1
 						lastoctet = str(lastoctet)
 						gatewayip = firstoctet + '.' + secondoctet + '.' + thirdoctet + '.' + lastoctet
 						variableresult = str(gatewayip) + ' ' + str(subnetmask)
